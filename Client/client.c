@@ -1,6 +1,4 @@
-//Nguyen Khanh hung
-//14020224
-//Chuong trinh Chatroom Client-client qua server
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -38,7 +36,7 @@ int main(int argc, char *argv[])
 	my_sock = socket(AF_INET, SOCK_STREAM, 0);
 	memset(their_addr.sin_zero, '\0', sizeof(their_addr.sin_zero));
 	their_addr.sin_family = AF_INET;
-	their_addr.sin_port = htons(7891);
+	their_addr.sin_port = htons(5555);
 	their_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	if (connect(my_sock, (struct sockaddr *)&their_addr, sizeof(their_addr)) < 0)
@@ -99,22 +97,30 @@ int main(int argc, char *argv[])
 	if (key == 2)
 	{
 		int x;
+		int i = 0;
 		printf("1.GroupA \n");
 		printf("2.GroupB \n");
 		scanf("%d", &x);
 		//memset(key,'\0', sizeof(key));
 		if (x == 1)
 		{
-			//printf("sdsad");
 			while (1)
 			{
-				memset(msg, '0', sizeof(msg));
-				fgets(msg, BUFF, stdin);
-				//scanf("%s", &msg);
+				
+				char mess[BUFF];
+				memset(msg, '\0', sizeof(msg));
+				memset(mess, '\0', sizeof(mess));
 				fflush(stdin);
-				strcat(msg, "100");
-				printf("%s\n", msg);
-				write(my_sock, msg, strlen(msg));
+				fgets(msg, BUFF, stdin);
+				msg[strlen(msg)-1]= '\0';
+				printf("%s",mess);
+				strcpy(mess, msg);
+				strcat(mess, "100");
+
+				if (i >= 1)
+					write(my_sock, mess, strlen(mess));
+				
+				i++;
 			}
 		}
 	}

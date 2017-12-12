@@ -1,6 +1,4 @@
-//Nguyen Khanh hung
-//14020224
-//Chuong trinh Chatroom Client-client qua server
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -49,16 +47,22 @@ void *recvmg(void *sock)
 	struct client_info cl = *((struct client_info *)sock);
 	char msg[500];
 	int len;
-	int i;
-	int j;
+	int i,j;
+	
 	while ((len = read(cl.sockno, msg, 500)) > 0)
 	{
 		msg[len] = '\0';
+
+		//kiem tra kieu tin nhan la gi?
+		
 		printf("%s", msg);
 		sendtoall(msg, cl.sockno);
 		memset(msg, '\0', sizeof(msg));
+		fflush(stdout);
 	}
 	pthread_mutex_lock(&mutex);
+
+	//xoa ng vua disss
 	printf("%s disconnected\n", cl.name);
 	for (i = 0; i < n; i++)
 	{
@@ -91,7 +95,7 @@ int main(int argc, char *argv[])
 	my_sock = socket(AF_INET, SOCK_STREAM, 0);
 	memset(my_addr.sin_zero, '\0', sizeof(my_addr.sin_zero));
 	my_addr.sin_family = AF_INET;
-	my_addr.sin_port = htons(7891);
+	my_addr.sin_port = htons(5555);
 	my_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	their_addr_size = sizeof(their_addr);
 
@@ -116,13 +120,15 @@ int main(int argc, char *argv[])
 		}
 
 		read(their_sock, msg, sizeof(msg));
-		printf("%s ", msg);
-		strcpy(cl.name, msg);
-		bzero(&msg, sizeof(msg));
+		msg[strlen(msg)]='\0';
+		printf("%s :", msg);
+		
 
 		pthread_mutex_lock(&mutex);
-		inet_ntop(AF_INET, (struct sockaddr *)&their_addr, ip, INET_ADDRSTRLEN);
-		printf(" connected\n");
+		strcpy(cl.name, msg);
+		memset(&msg, 0, BUFF);
+		
+		printf("connected\n");
 		cl.sockno = their_sock;
 		strcpy(cl.ip, ip);
 		clients[n] = their_sock;
